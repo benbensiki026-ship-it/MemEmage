@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemEmage - Create & Share Memes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>🎭 MemEmage</h1>
+                    <p class="tagline">Powered by C++ & Rust</p>
+                </div>
+                <div class="nav-menu" id="navMenu">
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('create')">Create Meme</a>
+                    <a href="#" id="myMemesLink" onclick="showPage('myMemes')" style="display:none;">My Memes</a>
+                    <div id="authButtons">
+                        <a href="#" onclick="showPage('login')" class="btn-secondary">Login</a>
+                        <a href="#" onclick="showPage('signup')" class="btn-primary">Sign Up</a>
+                    </div>
+                    <div id="userMenu" style="display:none;">
+                        <span id="username"></span>
+                        <a href="#" onclick="logout()" class="btn-secondary">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Home Page -->
+        <div id="homePage" class="page active">
+            <section class="hero">
+                <div class="container">
+                    <h2>Create Amazing Memes in Seconds!</h2>
+                    <p>Built with cutting-edge C++ image processing and Rust backend</p>
+                    <button onclick="showPage('create')" class="btn-large">Start Creating</button>
+                </div>
+            </section>
+
+            <section class="memes-grid">
+                <div class="container">
+                    <h3>Latest Memes</h3>
+                    <div id="memesContainer" class="memes-container">
+                        <div class="loading">Loading memes...</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Create Meme Page -->
+        <div id="createPage" class="page">
+            <div class="container">
+                <h2>Create Your Meme</h2>
+                <div class="meme-creator">
+                    <div class="preview-section">
+                        <h3>Preview</h3>
+                        <div class="meme-preview">
+                            <div class="placeholder-image">
+                                <p>📸 Select a template or upload an image</p>
+                            </div>
+                            <div class="text-overlay top-text" id="previewTopText"></div>
+                            <div class="text-overlay bottom-text" id="previewBottomText"></div>
+                        </div>
+                    </div>
+
+                    <div class="editor-section">
+                        <h3>Meme Editor</h3>
+                        <form id="memeForm" onsubmit="createMeme(event)">
+                            <div class="form-group">
+                                <label for="memeTitle">Title</label>
+                                <input type="text" id="memeTitle" required placeholder="Give your meme a catchy title">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="topText">Top Text</label>
+                                <input type="text" id="topText" placeholder="TOP TEXT" oninput="updatePreview()">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bottomText">Bottom Text</label>
+                                <input type="text" id="bottomText" placeholder="BOTTOM TEXT" oninput="updatePreview()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Choose Template</label>
+                                <div class="templates-grid">
+                                    <div class="template-option" onclick="selectTemplate('drake')">
+                                        <div class="template-thumb">Drake</div>
+                                    </div>
+                                    <div class="template-option" onclick="selectTemplate('distracted')">
+                                        <div class="template-thumb">Distracted BF</div>
+                                    </div>
+                                    <div class="template-option" onclick="selectTemplate('success')">
+                                        <div class="template-thumb">Success Kid</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary btn-large">Generate Meme</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Memes Page -->
+        <div id="myMemesPage" class="page">
+            <div class="container">
+                <h2>My Memes</h2>
+                <div id="myMemesContainer" class="memes-container">
+                    <div class="loading">Loading your memes...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div id="loginPage" class="page">
+            <div class="container auth-container">
+                <div class="auth-box">
+                    <h2>Login to MemEmage</h2>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" id="loginUsername" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-large">Login</button>
+                    </form>
+
+                    <p class="auth-footer">
+                        Don't have an account? 
+                        <a href="#" onclick="showPage('signup')">Sign up here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signup Page -->
+        <div id="signupPage" class="page">
+            <div class="container auth-container">
+                <div class="auth-box">
+                    <h2>Join MemEmage</h2>
+                    <form id="signupForm" onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label for="signupUsername">Username</label>
+                            <input type="text" id="signupUsername" required minlength="3" maxlength="30">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signupEmail">Email</label>
+                            <input type="email" id="signupEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" required minlength="8">
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-large">Sign Up</button>
+                    </form>
+
+                    <p class="auth-footer">
+                        Already have an account? 
+                        <a href="#" onclick="showPage('login')">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
